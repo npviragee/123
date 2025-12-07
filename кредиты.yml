@@ -1,0 +1,95 @@
+openapi: "3.0.0"
+
+info:
+  version: '2.0'
+  title: API транзакции платежа
+  description: "API для получения данных от Банка по транзакции выплаты кредита по токену кредитной карты"  
+servers:
+  - url: https://credit.swagger.io/api
+    description: Production server
+tags:
+  - name: client
+    description: Операции по клиенту
+paths:
+  /clients/{client_id}:
+    get:
+      tags:
+        - client          
+      summary: "получить данные по транзакции"
+      description: "С помощью этого метода можно получить данные по транзакции перечисления ДС на карту клиента"      
+      parameters:
+        - name: client_id
+          in: path
+          description: "ID клиента"
+          required: true
+          schema:
+            type: string
+          example: "692bfbf2ac059fbe8e987105"
+        
+      responses:
+       200:
+          description: Успешный ответ от Банка
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                 client_id:
+                  type: string
+                  example: "692bfbf2ac059fbe8e987105"
+                 card_token:
+                  type: string
+                  example: "849w"
+                 creditcontract:
+                  type: object
+                  properties:
+                   сreditcontract_number:
+                    type: string
+                    example: "AB/378"
+                   creditcontract_date:
+                    type: string
+                    example: "01.01.2026"
+                   creditcontract_sum:
+                    type: object
+                    properties:
+                     creditcontract_amount:
+                      type: integer
+                      example: 10864
+                     Creditcontract_currency:
+                      type: string
+                      example: "RUB"
+                 transaction:
+                  type: object
+                  properties:
+                   transaction_id:
+                    type: string
+                    example: "6308d7d986febd0264475d3e"                   
+                   transaction_sum:
+                    type: object
+                    properties:
+                     transaction_amount:
+                      type: number
+                      format: float
+                      example: 10864
+                     transaction_currency:
+                      type: string
+                      example: "RUB"
+                   transaction_status:
+                    type: string
+                    description: "Four possible statuses:\n
+                      \n* `выполнено`: Перевод кредитных средств успешно выполнен;                      
+                      \n* `в процессе`: Транзакция обрабатывается;
+                      \n* `отклонено`: Перевод кредитных средств не выполнен."
+                    example: "выполнено" 
+
+       400:
+        description: Неверный формат id клиента
+       401:
+        description: Ошибка аутентификации
+       404:
+        description: Клиент не найден
+securitySchemes:    
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
